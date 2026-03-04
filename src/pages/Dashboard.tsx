@@ -27,7 +27,7 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const [{ data: emps }, { data: branchList }, { data: empBranches }] = await Promise.all([
-        supabase.from('employees').select('*').order('created_at', { ascending: false }),
+        supabase.from('employees').select('*'),
         supabase.from('branches').select('*').order('name'),
         supabase.from('employee_branches').select('employee_id, branch_id'),
       ]);
@@ -52,11 +52,13 @@ const Dashboard = () => {
 
   const filtered = employees.filter((emp) => {
     const matchesSearch =
-      emp.name.toLowerCase().includes(search.toLowerCase()) ||
-      emp.email.toLowerCase().includes(search.toLowerCase()) ||
-      emp.role.toLowerCase().includes(search.toLowerCase());
+      (emp.name?.toLowerCase() || '').includes(search.toLowerCase()) ||
+      (emp.email?.toLowerCase() || '').includes(search.toLowerCase()) ||
+      (emp.role?.toLowerCase() || '').includes(search.toLowerCase());
+
     const matchesBranch =
       branchFilter === 'all' || emp.branches.some((b) => b.id === branchFilter);
+
     return matchesSearch && matchesBranch;
   });
 
